@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   MAIN                                                              06/06/2017 07:32:19 PAGE 1   
+C51 COMPILER V9.52.0.0   MAIN                                                              06/10/2017 21:23:53 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE MAIN
@@ -22,143 +22,105 @@ line level    source
   12          /*------------------------------------------------------------------*/
   13          
   14          
-  15          #include  "config.h"
-  16          #include  "USART1.h"
-  17          #include  "delay.h"
-  18          #include <stdio.h>
+  15          
+  16          #include  "config.h"
+  17          #include  "USART1.h"
+  18          #include  "delay.h"
   19          
   20          
-  21          /*************  功能说明  **************
-  22          
-  23          双串口全双工中断方式收发通讯程序。
+  21          #define RELAY_ON P00=0;
+  22          #define RELAY_OFF P00=1;
+  23          /*************  功能说明  **************
   24          
-  25          通过PC向MCU发送数据, MCU收到后通过串口把收到的数据原样返回.
+  25          双串口全双工中断方式收发通讯程序。
   26          
-  27          ******************************************/
+  27          通过PC向MCU发送数据, MCU收到后通过串口把收到的数据原样返回.
   28          
-  29          /*************  本地常量声明  **************/
+  29          ******************************************/
   30          
-  31          
-  32          /*************  本地变量声明  **************/
+  31          /*************  本地常量声明  **************/
+  32          
   33          
-  34          
-  35          /*************  本地函数声明  **************/
+  34          /*************  本地变量声明  **************/
+  35          
   36          
-  37          
+  37          /*************  本地函数声明  **************/
   38          
-  39          /*************  外部函数和变量声明 *****************/
-  40          unsigned int time_count,count,sum;
-  41          
+  39          
+  40          
+  41          /*************  外部函数和变量声明 *****************/
   42          
-  43          /*************  串口1初始化函数 *****************/
-  44          void  UART_config(void)
-  45          {
-  46   1        COMx_InitDefine   COMx_InitStructure;         //结构定义
-  47   1        COMx_InitStructure.UART_Mode      = UART_8bit_BRTx;   //模式,       UART_ShiftRight,UART_8bit_BRTx,UART_9b
+  43          
+  44          /*************  串口1初始化函数 *****************/
+  45          void  UART_config(void)
+  46          {
+  47   1        COMx_InitDefine   COMx_InitStructure;         //结构定义
+  48   1        COMx_InitStructure.UART_Mode      = UART_8bit_BRTx;   //模式,       UART_ShiftRight,UART_8bit_BRTx,UART_9b
              -it,UART_9bit_BRTx
-  48   1        COMx_InitStructure.UART_BRT_Use   = BRT_Timer2;     //使用波特率,   BRT_Timer1, BRT_Timer2 (注意: 串口2固定
+  49   1        COMx_InitStructure.UART_BRT_Use   = BRT_Timer2;     //使用波特率,   BRT_Timer1, BRT_Timer2 (注意: 串口2固定
              -使用BRT_Timer2)
-  49   1        COMx_InitStructure.UART_BaudRate  = 115200ul;     //波特率, 一般 110 ~ 115200
-  50   1        COMx_InitStructure.UART_RxEnable  = ENABLE;       //接收允许,   ENABLE或DISABLE
-  51   1        COMx_InitStructure.BaudRateDouble = DISABLE;      //波特率加倍, ENABLE或DISABLE
-  52   1        COMx_InitStructure.UART_Interrupt = ENABLE;       //中断允许,   ENABLE或DISABLE
-C51 COMPILER V9.52.0.0   MAIN                                                              06/06/2017 07:32:19 PAGE 2   
+  50   1        COMx_InitStructure.UART_BaudRate  = 9600ul;     //波特率, 一般 110 ~ 115200
+  51   1        COMx_InitStructure.UART_RxEnable  = ENABLE;       //接收允许,   ENABLE或DISABLE
+  52   1        COMx_InitStructure.BaudRateDouble = DISABLE;      //波特率加倍, ENABLE或DISABLE
+C51 COMPILER V9.52.0.0   MAIN                                                              06/10/2017 21:23:53 PAGE 2   
 
-  53   1        COMx_InitStructure.UART_Polity    = PolityLow;      //中断优先级, PolityLow,PolityHigh
-  54   1        COMx_InitStructure.UART_P_SW      = UART1_SW_P30_P31; //切换端口,   UART1_SW_P30_P31,UART1_SW_P36_P37,UAR
+  53   1        COMx_InitStructure.UART_Interrupt = ENABLE;       //中断允许,   ENABLE或DISABLE
+  54   1        COMx_InitStructure.UART_Polity    = PolityLow;      //中断优先级, PolityLow,PolityHigh
+  55   1        COMx_InitStructure.UART_P_SW      = UART1_SW_P30_P31; //切换端口,   UART1_SW_P30_P31,UART1_SW_P36_P37,UAR
              -T1_SW_P16_P17(必须使用内部时钟)
-  55   1        COMx_InitStructure.UART_RXD_TXD_Short = DISABLE;    //内部短路RXD与TXD, 做中继, ENABLE,DISABLE
-  56   1        USART_Configuration(USART1, &COMx_InitStructure);   //初始化串口1 USART1,USART2
-  57   1      
-  58   1        PrintString1("STC15F2K60S2 UART1 Test Prgramme!\r\n");  //SUART1发送一个字符串
-  59   1      }
-  60          
+  56   1        COMx_InitStructure.UART_RXD_TXD_Short = DISABLE;    //内部短路RXD与TXD, 做中继, ENABLE,DISABLE
+  57   1        USART_Configuration(USART1, &COMx_InitStructure);   //初始化串口1 USART1,USART2
+  58   1      
+  59   1        PrintString1("STC15F2K60S2 UART1 Test Prgramme!\r\n");  //SUART1发送一个字符串
+  60   1      }
   61          
   62          
-  63          
-  64          
-  65          void initial()
-  66          {
-  67   1        count=0;
-  68   1        time_count=0;
-  69   1          sum=0;
-  70   1      
-  71   1        TMOD=0x02; //定时器0工作方式2,8位自动装入计数
-  72   1        TH0=0x06;
-  73   1        TL0=0x06; //定时器赋初值 计时0.25ms，1000次为0.25s,4000次为一秒
-  74   1      
-  75   1        IT0=1;//  外部中断0工作方式（下降沿有效）
-  76   1      
-  77   1        EA=1;
-  78   1        ET0=1;
-  79   1        EX0=1;
-  80   1        TR0=1; //开中断
-  81   1      }
-  82          void exter0() interrupt 0
-  83          {
-  84   1        count++;
-  85   1      }
-  86          
-  87          void timer0() interrupt 1
-  88          {
-  89   1        time_count++;
-  90   1        if(time_count==4000)
-  91   1        {
-  92   2          sum=count;
-  93   2          time_count=0;
-  94   2          count=0;
-  95   2      
-  96   2      
-  97   2        }
-  98   1      }
-  99          /**********************************************/
- 100          void main()
- 101          {
- 102   1        u8  i;
- 103   1        char str[25];
- 104   1      
- 105   1        UART_config();
- 106   1        EA = 1;
- 107   1      
- 108   1        //PWM初始化
- 109   1      
- 110   1        P0M0=0;
- 111   1        P0M1=0;
- 112   1        initial();
- 113   1      
-C51 COMPILER V9.52.0.0   MAIN                                                              06/06/2017 07:32:19 PAGE 3   
-
- 114   1        while(1){
- 115   2          sprintf(str,"%d\n\r",sum);
- 116   2          PrintString1(str);
- 117   2        }
- 118   1        while (1)
- 119   1        {
- 120   2          delay_ms(2000);
- 121   2          if(COM1.RX_TimeOut > 0)   //超时计数
- 122   2          {
- 123   3            if(--COM1.RX_TimeOut == 0)
- 124   3            {
- 125   4              if(COM1.RX_Cnt > 0)
- 126   4              {
- 127   5                for(i=0; i<COM1.RX_Cnt; i++)  TX1_write2buff(RX1_Buffer[i]);  //收到的数据原样返回
- 128   5              }
- 129   4              COM1.RX_Cnt = 0;
- 130   4            }
- 131   3          }
- 132   2        }
- 133   1      }
- 134          
- 135          
- 136          
+  63          /**********************************************/
+  64          void main(void)
+  65          {
+  66   1        u8  i;
+  67   1      
+  68   1        UART_config();
+  69   1        EA = 1;
+  70   1        //初始化IO口，用P00 P01，分别控制两个继电器
+  71   1        P0M0=0;
+  72   1        P0M1=0;
+  73   1        //
+  74   1        
+  75   1      
+  76   1        while (1)
+  77   1        {
+  78   2          delay_ms(1);
+  79   2          if(COM1.RX_TimeOut > 0)   //超时计数
+  80   2          {
+  81   3            if(--COM1.RX_TimeOut == 0)
+  82   3            {
+  83   4              if(COM1.RX_Cnt > 0)
+  84   4              {
+  85   5                for(i=0; i<COM1.RX_Cnt; i++)  TX1_write2buff(RX1_Buffer[i]);  //收到的数据原样返回
+  86   5                if(RX1_Buffer[0]=='U'){
+  87   6                  RELAY_ON;
+  88   6                }
+  89   5                if(RX1_Buffer[0]=='D'){
+  90   6                  RELAY_OFF;
+  91   6                }
+  92   5              }
+  93   4              COM1.RX_Cnt = 0;
+  94   4            }
+  95   3          }
+  96   2        }
+  97   1      }
+  98          
+  99          
+ 100          
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    189    ----
-   CONSTANT SIZE    =     41    ----
+   CODE SIZE        =    126    ----
+   CONSTANT SIZE    =     36    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =      6      39
+   DATA SIZE        =   ----      14
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.

@@ -12,119 +12,83 @@
 /*------------------------------------------------------------------*/
 
 
+
 #include	"config.h"
 #include	"USART1.h"
 #include	"delay.h"
-#include <stdio.h>
 
 
-/*************	¹¦ÄÜËµÃ÷	**************
+#define RELAY_ON P00=0;
+#define RELAY_OFF P00=1;
+/*************	åŠŸèƒ½è¯´æ˜Ž	**************
 
-Ë«´®¿ÚÈ«Ë«¹¤ÖÐ¶Ï·½Ê½ÊÕ·¢Í¨Ñ¶³ÌÐò¡£
+åŒä¸²å£å…¨åŒå·¥ä¸­æ–­æ–¹å¼æ”¶å‘é€šè®¯ç¨‹åºã€‚
 
-Í¨¹ýPCÏòMCU·¢ËÍÊý¾Ý, MCUÊÕµ½ºóÍ¨¹ý´®¿Ú°ÑÊÕµ½µÄÊý¾ÝÔ­Ñù·µ»Ø.
+é€šè¿‡PCå‘MCUå‘é€æ•°æ®, MCUæ”¶åˆ°åŽé€šè¿‡ä¸²å£æŠŠæ”¶åˆ°çš„æ•°æ®åŽŸæ ·è¿”å›ž.
 
 ******************************************/
 
-/*************	±¾µØ³£Á¿ÉùÃ÷	**************/
+/*************	æœ¬åœ°å¸¸é‡å£°æ˜Ž	**************/
 
 
-/*************	±¾µØ±äÁ¿ÉùÃ÷	**************/
+/*************	æœ¬åœ°å˜é‡å£°æ˜Ž	**************/
 
 
-/*************	±¾µØº¯ÊýÉùÃ÷	**************/
+/*************	æœ¬åœ°å‡½æ•°å£°æ˜Ž	**************/
 
 
 
-/*************  Íâ²¿º¯ÊýºÍ±äÁ¿ÉùÃ÷ *****************/
-unsigned int time_count,count,sum;
+/*************  å¤–éƒ¨å‡½æ•°å’Œå˜é‡å£°æ˜Ž *****************/
 
 
-/*************  ´®¿Ú1³õÊ¼»¯º¯Êý *****************/
+/*************  ä¸²å£1åˆå§‹åŒ–å‡½æ•° *****************/
 void	UART_config(void)
 {
-	COMx_InitDefine		COMx_InitStructure;					//½á¹¹¶¨Òå
-	COMx_InitStructure.UART_Mode      = UART_8bit_BRTx;		//Ä£Ê½,       UART_ShiftRight,UART_8bit_BRTx,UART_9bit,UART_9bit_BRTx
-	COMx_InitStructure.UART_BRT_Use   = BRT_Timer2;			//Ê¹ÓÃ²¨ÌØÂÊ,   BRT_Timer1, BRT_Timer2 (×¢Òâ: ´®¿Ú2¹Ì¶¨Ê¹ÓÃBRT_Timer2)
-	COMx_InitStructure.UART_BaudRate  = 115200ul;			//²¨ÌØÂÊ, Ò»°ã 110 ~ 115200
-	COMx_InitStructure.UART_RxEnable  = ENABLE;				//½ÓÊÕÔÊÐí,   ENABLE»òDISABLE
-	COMx_InitStructure.BaudRateDouble = DISABLE;			//²¨ÌØÂÊ¼Ó±¶, ENABLE»òDISABLE
-	COMx_InitStructure.UART_Interrupt = ENABLE;				//ÖÐ¶ÏÔÊÐí,   ENABLE»òDISABLE
-	COMx_InitStructure.UART_Polity    = PolityLow;			//ÖÐ¶ÏÓÅÏÈ¼¶, PolityLow,PolityHigh
-	COMx_InitStructure.UART_P_SW      = UART1_SW_P30_P31;	//ÇÐ»»¶Ë¿Ú,   UART1_SW_P30_P31,UART1_SW_P36_P37,UART1_SW_P16_P17(±ØÐëÊ¹ÓÃÄÚ²¿Ê±ÖÓ)
-	COMx_InitStructure.UART_RXD_TXD_Short = DISABLE;		//ÄÚ²¿¶ÌÂ·RXDÓëTXD, ×öÖÐ¼Ì, ENABLE,DISABLE
-	USART_Configuration(USART1, &COMx_InitStructure);		//³õÊ¼»¯´®¿Ú1 USART1,USART2
+	COMx_InitDefine		COMx_InitStructure;					//ç»“æž„å®šä¹‰
+	COMx_InitStructure.UART_Mode      = UART_8bit_BRTx;		//æ¨¡å¼,       UART_ShiftRight,UART_8bit_BRTx,UART_9bit,UART_9bit_BRTx
+	COMx_InitStructure.UART_BRT_Use   = BRT_Timer2;			//ä½¿ç”¨æ³¢ç‰¹çŽ‡,   BRT_Timer1, BRT_Timer2 (æ³¨æ„: ä¸²å£2å›ºå®šä½¿ç”¨BRT_Timer2)
+	COMx_InitStructure.UART_BaudRate  = 9600ul;			//æ³¢ç‰¹çŽ‡, ä¸€èˆ¬ 110 ~ 115200
+	COMx_InitStructure.UART_RxEnable  = ENABLE;				//æŽ¥æ”¶å…è®¸,   ENABLEæˆ–DISABLE
+	COMx_InitStructure.BaudRateDouble = DISABLE;			//æ³¢ç‰¹çŽ‡åŠ å€, ENABLEæˆ–DISABLE
+	COMx_InitStructure.UART_Interrupt = ENABLE;				//ä¸­æ–­å…è®¸,   ENABLEæˆ–DISABLE
+	COMx_InitStructure.UART_Polity    = PolityLow;			//ä¸­æ–­ä¼˜å…ˆçº§, PolityLow,PolityHigh
+	COMx_InitStructure.UART_P_SW      = UART1_SW_P30_P31;	//åˆ‡æ¢ç«¯å£,   UART1_SW_P30_P31,UART1_SW_P36_P37,UART1_SW_P16_P17(å¿…é¡»ä½¿ç”¨å†…éƒ¨æ—¶é’Ÿ)
+	COMx_InitStructure.UART_RXD_TXD_Short = DISABLE;		//å†…éƒ¨çŸ­è·¯RXDä¸ŽTXD, åšä¸­ç»§, ENABLE,DISABLE
+	USART_Configuration(USART1, &COMx_InitStructure);		//åˆå§‹åŒ–ä¸²å£1 USART1,USART2
 
-	PrintString1("STC15F2K60S2 UART1 Test Prgramme!\r\n");	//SUART1·¢ËÍÒ»¸ö×Ö·û´®
+	PrintString1("STC15F2K60S2 UART1 Test Prgramme!\r\n");	//SUART1å‘é€ä¸€ä¸ªå­—ç¬¦ä¸²
 }
 
 
-
-
-
-void initial()
-{
-	count=0;
-	time_count=0;
-   	sum=0;
-
-	TMOD=0x02; //¶¨Ê±Æ÷0¹¤×÷·½Ê½2,8Î»×Ô¶¯×°Èë¼ÆÊý
-	TH0=0x06;
-	TL0=0x06; //¶¨Ê±Æ÷¸³³õÖµ ¼ÆÊ±0.25ms£¬1000´ÎÎª0.25s,4000´ÎÎªÒ»Ãë
-
-	IT0=1;//  Íâ²¿ÖÐ¶Ï0¹¤×÷·½Ê½£¨ÏÂ½µÑØÓÐÐ§£©
-
-	EA=1;
-	ET0=1;
-	EX0=1;
-	TR0=1; //¿ªÖÐ¶Ï
-}
-void exter0() interrupt 0
-{
-	count++;
-}
-
-void timer0() interrupt 1
-{
-	time_count++;
-	if(time_count==4000)
-	{
-		sum=count;
-		time_count=0;
-		count=0;
-
-
-	}
-}
 /**********************************************/
-void main()
+void main(void)
 {
 	u8	i;
-	char str[25];
 
 	UART_config();
 	EA = 1;
-
-	//PWM³õÊ¼»¯
-
+	//åˆå§‹åŒ–IOå£ï¼Œç”¨P00 P01ï¼Œåˆ†åˆ«æŽ§åˆ¶ä¸¤ä¸ªç»§ç”µå™¨
 	P0M0=0;
 	P0M1=0;
-	initial();
+	//
+	
 
-	while(1){
-		sprintf(str,"%d\n\r",sum);
-		PrintString1(str);
-	}
 	while (1)
 	{
-		delay_ms(2000);
-		if(COM1.RX_TimeOut > 0)		//³¬Ê±¼ÆÊý
+		delay_ms(1);
+		if(COM1.RX_TimeOut > 0)		//è¶…æ—¶è®¡æ•°
 		{
 			if(--COM1.RX_TimeOut == 0)
 			{
 				if(COM1.RX_Cnt > 0)
 				{
-					for(i=0; i<COM1.RX_Cnt; i++)	TX1_write2buff(RX1_Buffer[i]);	//ÊÕµ½µÄÊý¾ÝÔ­Ñù·µ»Ø
+					for(i=0; i<COM1.RX_Cnt; i++)	TX1_write2buff(RX1_Buffer[i]);	//æ”¶åˆ°çš„æ•°æ®åŽŸæ ·è¿”å›ž
+					if(RX1_Buffer[0]=='U'){	
+						RELAY_ON;
+					}
+					if(RX1_Buffer[0]=='D'){
+						RELAY_OFF;
+					}
 				}
 				COM1.RX_Cnt = 0;
 			}
