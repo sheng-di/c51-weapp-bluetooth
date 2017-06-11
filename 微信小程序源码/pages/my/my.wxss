@@ -1,0 +1,18 @@
+/* pages/my/my.wxss */
+page{
+  background-color: #484654;
+}
+.myimg{
+  width:595rpx;
+height:718rpx;
+margin-top: 120rpx;
+
+}
+
+.myview{
+  text-align: center;
+}
+.mytxt{
+  margin-top:87rpx;
+  color:#fff;
+}

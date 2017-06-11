@@ -1,0 +1,9 @@
+<view class="myview">
+
+<image bindtap="btn" class="myimg" src="{{src}}">
+
+</image>
+
+<view class="mytxt">我的台灯</view>
+</view>
+

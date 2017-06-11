@@ -1,0 +1,30 @@
+{
+  "pages":[
+    "pages/index/index",
+    "pages/bluetooth/bluetooth",
+    "pages/my/my"
+  ],
+  "window":{
+    "backgroundTextStyle":"light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "超级无敌自动开关台灯",
+    "navigationBarTextStyle":"black"
+  },
+  "tabBar": {
+
+    "borderStyle": "white",
+
+    "list": [{
+      "pagePath": "pages/index/index",
+      "iconPath": "images/home.png",
+      "selectedIconPath": "images/homeselected.png",
+      "text": "连接"
+    }, {
+      "pagePath": "pages/my/my",
+      "iconPath": "images/exam.png",
+      "selectedIconPath": "images/examselected.png",
+      "text": "台灯"
+    }]
+  },
+  "debug":true
+}
